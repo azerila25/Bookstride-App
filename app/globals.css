@@ -1,0 +1,5 @@
+@import "tailwindcss";
+
+body.hide-bottom-nav nav {
+  display: none !important;
+}

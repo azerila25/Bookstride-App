@@ -1,0 +1,6 @@
+{
+  "name": "Bookstride",
+  "description": "Strava for readers. Track your reading sessions, share progress, and give kudos to friends.",
+  "requestFramePermissions": [],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}
