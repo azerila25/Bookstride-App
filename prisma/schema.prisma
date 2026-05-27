@@ -10,59 +10,59 @@ datasource db {
 }
 
 model User {
-  id               String           @id @default(uuid())
-  name             String?
-  email            String?          @unique
-  emailVerified    DateTime?
-  image            String?
-  bio              String?
-  location         String?
-  username         String?          @unique
-  password         String?
-  accounts         Account[]
-  sessions         Session[]
+  id            String           @id @default(auto()) @map("_id") @db.ObjectId
+  name          String?
+  email         String?          @unique
+  emailVerified DateTime?
+  image         String?
+  bio           String?
+  location      String?
+  username      String?          @unique
+  password      String?
+  accounts      Account[]
+  sessions      Session[]
   
   // Relations
-  books            Book[]
-  readingSessions  ReadingSession[]
-  interactions     Interaction[]
+  books           Book[]
+  readingSessions ReadingSession[]
+  interactions    Interaction[]
   
-  createdAt        DateTime         @default(now())
-  updatedAt        DateTime         @updatedAt
+  createdAt     DateTime         @default(now())
+  updatedAt     DateTime         @updatedAt
 }
 
 model Follow {
-  id          String   @id @default(uuid())
-  followerId  String   // ID of user who is following
-  followingId String   // ID of user who is being followed
+  id          String   @id @default(auto()) @map("_id") @db.ObjectId
+  followerId  String   @db.ObjectId
+  followingId String   @db.ObjectId
   createdAt   DateTime @default(now())
 
   @@unique([followerId, followingId])
 }
 
 model Notification {
-  id          String   @id @default(uuid())
-  userId      String   // ID of user who receives notification
-  title       String   // e.g. "New Kudos", "Wow! Nice work, Али Реза"
-  content     String   // e.g. "Azmi Falah gave you kudos on Morning Run" or "Your activity is ready. Go dive into those stats!"
-  avatarUrl   String?  // Optional avatar of the person triggering it
-  isRead      Boolean  @default(false)
-  createdAt   DateTime @default(now())
+  id        String   @id @default(auto()) @map("_id") @db.ObjectId
+  userId    String   @db.ObjectId
+  title     String   
+  content   String   
+  avatarUrl String?  
+  isRead    Boolean  @default(false)
+  createdAt DateTime @default(now())
 }
 
 model Account {
-  id                 String  @id @default(cuid())
-  userId             String
-  type               String
-  provider           String
-  providerAccountId  String
-  refresh_token      String? 
-  access_token       String? 
-  expires_at         Int?
-  token_type         String?
-  scope              String?
-  id_token           String? 
-  session_state      String?
+  id                String  @id @default(auto()) @map("_id") @db.ObjectId
+  userId            String  @db.ObjectId
+  type              String
+  provider          String
+  providerAccountId String
+  refresh_token     String? 
+  access_token      String? 
+  expires_at        Int?
+  token_type        String?
+  scope             String?
+  id_token          String? 
+  session_state     String?
 
   user User @relation(fields: [userId], references: [id], onDelete: Cascade)
 
@@ -70,14 +70,15 @@ model Account {
 }
 
 model Session {
-  id           String   @id @default(cuid())
+  id           String   @id @default(auto()) @map("_id") @db.ObjectId
   sessionToken String   @unique
-  userId       String
+  userId       String   @db.ObjectId
   expires      DateTime
   user         User     @relation(fields: [userId], references: [id], onDelete: Cascade)
 }
 
 model VerificationToken {
+  id         String   @id @default(auto()) @map("_id") @db.ObjectId
   identifier String
   token      String   @unique
   expires    DateTime
@@ -86,54 +87,54 @@ model VerificationToken {
 }
 
 model Book {
-  id              String           @id @default(uuid())
-  title           String
-  author          String?
-  totalPages      Int
-  coverImage      String?
+  id         String           @id @default(auto()) @map("_id") @db.ObjectId
+  title      String
+  author     String?
+  totalPages Int
+  coverImage String?
   
   // Relations
-  userId          String
-  user            User             @relation(fields: [userId], references: [id], onDelete: Cascade)
-  sessions        ReadingSession[]
+  userId    String           @db.ObjectId
+  user      User             @relation(fields: [userId], references: [id], onDelete: Cascade)
+  sessions  ReadingSession[]
 
-  createdAt       DateTime         @default(now())
-  updatedAt       DateTime         @updatedAt
+  createdAt DateTime         @default(now())
+  updatedAt DateTime         @updatedAt
 }
 
 model ReadingSession {
-  id              String           @id @default(uuid())
+  id              String        @id @default(auto()) @map("_id") @db.ObjectId
   startTime       DateTime
   endTime         DateTime?
   durationMinutes Int?
   startPage       Int
   endPage         Int?
   pagesRead       Int?
-  pacePerPage     Float?           // minutes per page
+  pacePerPage     Float?        
   note            String?
   location        String?
   photoUrl        String?
 
   // Relations
-  userId          String
-  user            User             @relation(fields: [userId], references: [id], onDelete: Cascade)
-  bookId          String
-  book            Book             @relation(fields: [bookId], references: [id], onDelete: Cascade)
-  interactions    Interaction[]
+  userId       String        @db.ObjectId
+  user         User          @relation(fields: [userId], references: [id], onDelete: Cascade)
+  bookId       String        @db.ObjectId
+  book         Book          @relation(fields: [bookId], references: [id], onDelete: Cascade)
+  interactions Interaction[]
 
-  createdAt       DateTime         @default(now())
+  createdAt    DateTime      @default(now())
 }
 
 model Interaction {
-  id               String         @id @default(uuid())
-  type             String         // "KUDOS" or "COMMENT"
-  content          String?        // for comments
+  id        String         @id @default(auto()) @map("_id") @db.ObjectId
+  type      String         // "KUDOS" or "COMMENT"
+  content   String?        // for comments
 
   // Relations
-  userId           String
-  user             User           @relation(fields: [userId], references: [id], onDelete: Cascade)
-  sessionId        String
-  session          ReadingSession @relation(fields: [sessionId], references: [id], onDelete: Cascade)
+  userId    String         @db.ObjectId
+  user      User           @relation(fields: [userId], references: [id], onDelete: Cascade)
+  sessionId String         @db.ObjectId
+  session   ReadingSession @relation(fields: [sessionId], references: [id], onDelete: Cascade)
 
-  createdAt        DateTime       @default(now())
+  createdAt DateTime       @default(now())
 }
